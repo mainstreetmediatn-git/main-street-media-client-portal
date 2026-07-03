@@ -18,6 +18,21 @@ This is built as a minimum sellable product for real $197 and $297 customers, wi
 - Lucide React icons
 - Flutter mobile scaffold retained in `mobile/`
 
+## Open Source & Commercial Use Policy
+
+Main Street Growth OS is intended to remain a private, proprietary, Supabase-based SaaS app. No GPL, AGPL, Sustainable Use, EE, enterprise, premium, cloud, or commercial-license code may be copied into the proprietary app without license review and written approval.
+
+Primary policy files:
+
+- [Open Source Audit](legal/OPEN_SOURCE_AUDIT.md)
+- [Commercial Use Checklist](legal/COMMERCIAL_USE_CHECKLIST.md)
+- [Third-Party Notices](legal/THIRD_PARTY_NOTICES.md)
+- [Attribution](legal/ATTRIBUTION.md)
+
+Current direct-use candidates are limited to Payload, LibreChat, Chatwoot core, and Activepieces core, subject to file-level license review and required notices.
+
+Twenty, Frappe CRM, Formbricks app/core, and n8n must be treated as inspiration-only, clean-room rebuild targets, or commercial-license candidates. Mautic, Metabase, and listmonk must only be used as separate services unless approved.
+
 ## Features
 
 - Home / landing page
