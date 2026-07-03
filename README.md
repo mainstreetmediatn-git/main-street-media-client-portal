@@ -16,7 +16,7 @@ This is built as a minimum sellable product for real $197 and $297 customers, wi
 - Plain CSS design system
 - Supabase Auth, Postgres, and Row Level Security
 - Lucide React icons
-- Flutter mobile scaffold retained in `mobile/`
+- Flutter mobile app in `mobile/`
 
 ## Open Source & Commercial Use Policy
 
@@ -46,6 +46,7 @@ Twenty, Frappe CRM, Formbricks app/core, and n8n must be treated as inspiration-
 - Locked Growth report messaging
 - Account/profile page
 - Admin-role protected operations foundation
+- Mobile login/signup, live dashboard, audit request, and assigned report views
 - Supabase SQL setup with tables, relationships, indexes, triggers, and RLS policies
 
 ## Environment Variables
@@ -76,7 +77,7 @@ Then open the local Next.js URL shown in the terminal.
 
 1. Create a Supabase project.
 2. Copy the values for `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` into `dashboard/.env.local`.
-3. Run the V1 SQL in `supabase/migrations/006_v1_paid_pilot_schema.sql` in the Supabase SQL editor, or use the Supabase CLI:
+3. Run the Supabase migrations in `supabase/migrations/` in order, or use the Supabase CLI:
 
 ```bash
 supabase db push
@@ -114,6 +115,7 @@ where email = 'owner@example.com';
 - The frontend uses only `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY`.
 - Service role keys must never be exposed in browser code.
 - Row Level Security is enabled for all V1 tables.
+- Security definer helper functions are kept in a private schema after migration `008_move_security_definer_helpers_private.sql`.
 - Customers can read only their own profile.
 - Customers can create and read only their own audit requests.
 - Customers can read only reports assigned to them.
