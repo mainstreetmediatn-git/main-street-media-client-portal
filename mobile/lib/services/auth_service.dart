@@ -1,6 +1,8 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class AuthService {
+  static const oauthRedirectTo = 'com.mainstreetmedia.portal://login-callback';
+
   final SupabaseClient _client = Supabase.instance.client;
 
   Future<AuthResponse> signIn(String email, String password) {
@@ -24,20 +26,15 @@ class AuthService {
       },
     );
 
-    final user = response.user;
-    if (user != null) {
-      await _client.from('profiles').upsert({
-        'id': user.id,
-        'full_name': fullName,
-        'email': email,
-        'business_name': businessName,
-        'phone': phone,
-        'role': 'customer',
-      }, onConflict: 'id', ignoreDuplicates: true);
-    }
-
     return response;
   }
 
   Future<void> signOut() => _client.auth.signOut();
+
+  Future<bool> signInWithOAuth(OAuthProvider provider) {
+    return _client.auth.signInWithOAuth(
+      provider,
+      redirectTo: oauthRedirectTo,
+    );
+  }
 }

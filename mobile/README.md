@@ -1,17 +1,17 @@
-# main_street_media_portal
+# Main Street Media Mobile Portal
 
-A new Flutter project.
+Status: Production
 
-## Getting Started
+Flutter companion app for the Main Street Media customer portal.
 
-This project is a starting point for a Flutter application.
+## Architecture
 
-A few resources to get you started if this is your first Flutter project:
+- The app reads business state through `BusinessSnapshot` in `lib/models/business_snapshot.dart`.
+- Package access is normalized to the canonical ids `core`, `elite`, and `agent_workflow_24_7`.
+- Legacy aliases remain accepted for reads so the app can survive older Supabase records.
 
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
+## Local Setup
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+- Copy `mobile/.env.example` to `mobile/.env`.
+- Set `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `CALENDLY_URL`, and `STRIPE_BILLING_URL`.
+- Run `flutter run` from the `mobile/` directory.

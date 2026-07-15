@@ -1,5 +1,7 @@
 # Attribution Policy
 
+Status: Production
+
 Last reviewed: 2026-07-03
 
 Main Street Growth OS should present itself as a proprietary Main Street Media Co. product. Attribution is a legal notice obligation, not permission to reuse third-party brands in our UI.
@@ -49,4 +51,3 @@ Modifications: [none/list]
 Notice location: /legal/THIRD_PARTY_NOTICES.md
 Approved by: [name/date]
 ```
-

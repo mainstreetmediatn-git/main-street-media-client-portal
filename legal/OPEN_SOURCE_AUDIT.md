@@ -1,5 +1,7 @@
 # Main Street Growth OS Open Source Audit
 
+Status: Production
+
 Last reviewed: 2026-07-03
 
 This is an engineering and commercial-readiness audit, not legal advice. Before copying third-party source into Main Street Growth OS, have counsel review the exact commit, file path, license text, and intended distribution model.

@@ -9,7 +9,16 @@ max_rows = 1000
 [auth]
 enabled = true
 site_url = "http://127.0.0.1:3000"
-additional_redirect_urls = ["http://127.0.0.1:3000"]
+additional_redirect_urls = [
+  "http://127.0.0.1:3000",
+  "http://127.0.0.1:3000/dashboard",
+  "http://localhost:3000",
+  "http://localhost:3000/dashboard",
+  "com.mainstreetmedia.portal://login-callback"
+]
+
+# For hosted Supabase, enable provider credentials in Dashboard > Authentication
+# > Sign In / Providers. Keep provider client secrets out of this repository.
 
 [db]
 major_version = 15

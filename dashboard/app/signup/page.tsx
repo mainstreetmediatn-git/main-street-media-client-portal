@@ -4,6 +4,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { ArrowRight } from "lucide-react";
+import type { Provider } from "@supabase/supabase-js";
+import { oauthProviders, signInWithOAuth } from "../../lib/auth";
 import { isSupabaseConfigured, supabase } from "../../lib/supabase";
 
 export default function SignupPage() {
@@ -71,6 +73,22 @@ export default function SignupPage() {
     setTimeout(() => router.push("/login"), 1400);
   }
 
+  async function handleOAuth(provider: Provider) {
+    setError(null);
+    setSuccess(null);
+
+    if (!isSupabaseConfigured()) {
+      setError("Supabase environment variables are missing.");
+      return;
+    }
+
+    setLoading(true);
+    const { error: oauthError } = await signInWithOAuth(provider);
+    setLoading(false);
+
+    if (oauthError) setError(oauthError.message);
+  }
+
   return (
     <main className="auth-page">
       <section className="auth-panel wide">
@@ -84,7 +102,10 @@ export default function SignupPage() {
         <div>
           <div className="eyebrow">Request access</div>
           <h1>Start your visibility audit</h1>
-          <p className="muted">Create your portal account. Main Street Media Co. will manually assign your package after purchase.</p>
+          <p className="muted">
+            Create your portal account. Main Street Media Co. will manually assign your canonical package after
+            purchase.
+          </p>
         </div>
         <form className="form two-column" onSubmit={handleSubmit}>
           <label>
@@ -113,6 +134,20 @@ export default function SignupPage() {
             {loading ? "Creating account..." : "Create account"} <ArrowRight size={18} aria-hidden />
           </button>
         </form>
+        <div className="auth-divider"><span>or</span></div>
+        <div className="oauth-actions">
+          {oauthProviders.map((provider) => (
+            <button
+              className="button button-secondary button-large"
+              disabled={loading}
+              key={provider.id}
+              onClick={() => handleOAuth(provider.id)}
+              type="button"
+            >
+              Continue with {provider.label}
+            </button>
+          ))}
+        </div>
         <p className="muted">
           Already have an account? <Link className="inline-link" href="/login">Log in.</Link>
         </p>

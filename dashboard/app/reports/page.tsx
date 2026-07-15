@@ -7,13 +7,12 @@ import { Shell } from "../../components/Shell";
 import { supabase } from "../../lib/supabase";
 import {
   canAccessPackage,
-  normalizeReport,
   packageLabel,
   reportCatalog,
-  type CustomerReportRow,
-  type Profile,
-  type Report
+  type BusinessSnapshot,
+  type Profile
 } from "../../lib/portal";
+import { loadBusinessSnapshot } from "../../lib/businessSnapshot";
 
 export default function ReportsPage() {
   return (
@@ -24,35 +23,36 @@ export default function ReportsPage() {
 }
 
 function ReportsContent({ profile }: { profile: Profile | null }) {
-  const [reports, setReports] = useState<Report[]>([]);
+  const [snapshot, setSnapshot] = useState<BusinessSnapshot | null>(null);
   const [loading, setLoading] = useState(true);
-  const packageType = profile?.package_type ?? null;
 
   useEffect(() => {
     async function loadReports() {
-      const { data } = await supabase
-        .from("customer_reports")
-        .select("id,user_id,report_id,assigned_at,created_at,reports(*)")
-        .order("assigned_at", { ascending: false });
-
-      const normalized = ((data as CustomerReportRow[] | null) ?? [])
-        .map(normalizeReport)
-        .filter((report): report is Report => Boolean(report));
-      setReports(normalized);
-      setLoading(false);
+      try {
+        if (!profile?.id) return;
+        const nextSnapshot = await loadBusinessSnapshot(supabase, profile.id);
+        setSnapshot(nextSnapshot);
+      } finally {
+        setLoading(false);
+      }
     }
 
     loadReports();
-  }, []);
+  }, [profile?.id]);
+
+  const packageType = snapshot?.profile.package.sourceValue ?? null;
+  const reports = snapshot?.reports ?? [];
 
   return (
     <Shell isAdmin={profile?.role === "admin"}>
       <div className="header">
-        <div>
-          <div className="eyebrow">Reports</div>
-          <h1>Reports Assigned to Your Business</h1>
-          <p className="muted">Your current package: {packageLabel(packageType)}.</p>
-        </div>
+          <div>
+            <div className="eyebrow">Reports</div>
+            <h1>Reports Assigned to Your Business</h1>
+            <p className="muted">
+              Your current canonical package: {snapshot?.profile.package.label ?? "Pending Assignment"}.
+            </p>
+          </div>
       </div>
 
       <section className="report-stack">
@@ -65,12 +65,12 @@ function ReportsContent({ profile }: { profile: Profile | null }) {
           </div>
         ) : null}
         {reports.map((report) => {
-          const unlocked = canAccessPackage(packageType, report.visibility_package_required);
+          const unlocked = canAccessPackage(packageType, report.requiredPackage.sourceValue);
           return (
             <article className={unlocked ? "report-detail card" : "report-detail card locked-report"} key={report.id}>
               <div className="report-detail-header">
                 <div>
-                  <span className="status-pill">{report.visibility_package_required === "197" ? "$197 Visibility" : "$297 Growth"}</span>
+                  <span className="status-pill">{report.requiredPackage.label}</span>
                   <h2>{report.title}</h2>
                   <p className="muted">{report.description || "Assigned report from Main Street Media Co."}</p>
                 </div>
@@ -79,15 +79,15 @@ function ReportsContent({ profile }: { profile: Profile | null }) {
               {unlocked ? (
                 <>
                   {report.content ? <div className="report-content">{report.content}</div> : null}
-                  {report.file_url ? (
-                    <a className="button button-secondary" href={report.file_url} target="_blank" rel="noreferrer">
+                  {report.fileUrl ? (
+                    <a className="button button-secondary" href={report.fileUrl} target="_blank" rel="noreferrer">
                       Open report <ExternalLink size={16} aria-hidden />
                     </a>
                   ) : null}
                 </>
               ) : (
                 <div className="locked-message">
-                  This report is available on the Growth package. Contact Main Street Media Co. to unlock it.
+                  This report is available on the {report.requiredPackage.label} package. Contact Main Street Media Co. to unlock it.
                 </div>
               )}
             </article>
@@ -99,13 +99,16 @@ function ReportsContent({ profile }: { profile: Profile | null }) {
         <h2>Report Types</h2>
         <div className="catalog-grid">
           {reportCatalog.map((item) => (
-            <article className={canAccessPackage(packageType, item.requiredPackage) ? "catalog-item" : "catalog-item locked"} key={item.type}>
+            <article
+              className={canAccessPackage(packageType, item.requiredPackage) ? "catalog-item" : "catalog-item locked"}
+              key={item.type}
+            >
               <div>
                 <h3>{item.label}</h3>
                 <p>{item.description}</p>
               </div>
               <span className={canAccessPackage(packageType, item.requiredPackage) ? "status-pill" : "lock-pill"}>
-                {canAccessPackage(packageType, item.requiredPackage) ? "Included" : "Growth"}
+                {packageLabel(item.requiredPackage)}
               </span>
             </article>
           ))}
@@ -114,4 +117,3 @@ function ReportsContent({ profile }: { profile: Profile | null }) {
     </Shell>
   );
 }
-

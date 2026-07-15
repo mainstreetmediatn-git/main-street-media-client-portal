@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Main Street Media Call Sheet</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --ink: #16212b;
+        --muted: #607080;
+        --line: #d9e2e8;
+        --panel: #ffffff;
+        --bg: #f5f7f4;
+        --accent: #167265;
+        --gold: #d7a84d;
+        --dark: #102027;
+      }
+
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        padding: 28px;
+        background: linear-gradient(135deg, #f8faf7, #eef4ef 42%, #f9f5ea);
+        color: var(--ink);
+        font: 14px/1.6 Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      }
+
+      .sheet {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: grid;
+        gap: 18px;
+      }
+
+      .hero {
+        background: var(--dark);
+        color: white;
+        border-radius: 18px;
+        padding: 24px;
+        box-shadow: 0 18px 45px rgba(30, 42, 54, 0.12);
+      }
+
+      .hero h1 {
+        margin: 8px 0 10px;
+        font-size: clamp(30px, 4vw, 56px);
+        line-height: 1;
+      }
+
+      .hero p,
+      .card p,
+      .card li {
+        color: var(--muted);
+      }
+
+      .eyebrow {
+        color: var(--gold);
+        font-size: 12px;
+        font-weight: 800;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+      }
+
+      .grid {
+        display: grid;
+        gap: 16px;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .card {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        padding: 18px;
+      }
+
+      .card h2,
+      .card h3 {
+        margin: 0 0 8px;
+        color: var(--ink);
+      }
+
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        border-radius: 999px;
+        border: 1px solid var(--line);
+        padding: 5px 10px;
+        margin: 0 6px 8px 0;
+        background: #fbfcfa;
+        color: var(--ink);
+        font-size: 12px;
+        font-weight: 700;
+      }
+
+      .sections {
+        display: grid;
+        gap: 16px;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      ul {
+        margin: 10px 0 0;
+        padding-left: 18px;
+      }
+
+      li + li {
+        margin-top: 8px;
+      }
+
+      .matrix {
+        display: grid;
+        gap: 10px;
+      }
+
+      .matrix-row {
+        display: grid;
+        grid-template-columns: 220px minmax(0, 1fr);
+        gap: 12px;
+        padding: 12px 14px;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        background: #fbfcfa;
+      }
+
+      .matrix-row strong {
+        color: var(--ink);
+      }
+
+      .note {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        margin-top: 8px;
+        color: var(--accent);
+        font-weight: 700;
+      }
+
+      @media (max-width: 900px) {
+        body { padding: 18px; }
+        .grid,
+        .sections {
+          grid-template-columns: 1fr;
+        }
+        .matrix-row {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="sheet">
+      <section class="hero">
+        <div class="eyebrow">Protected operator brief</div>
+        <h1>Main Street Media call sheet</h1>
+          <p>
+          Canonical package ids are <strong>core</strong>, <strong>elite</strong>, and
+          <strong>agent_workflow_24_7</strong>. Legacy Reveal / Evolve / Ascend records and existing numeric
+          records still normalize to the same access model for reads only, and the web portal plus Flutter companion
+          app both read from the same BusinessSnapshot contract.
+        </p>
+        <div>
+          <span class="badge">Server-protected surface</span>
+          <span class="badge">Dashboard-only</span>
+          <span class="badge">Legacy compatible</span>
+        </div>
+      </section>
+
+      <section class="grid">
+        <article class="card">
+          <div class="eyebrow">Core</div>
+          <h2>Foundational visibility</h2>
+          <p>Canonical id <strong>core</strong>. Unlocks the baseline dashboard, visibility audit, and customer intake flow.</p>
+          <div class="note">Legacy aliases: Reveal, 197</div>
+        </article>
+        <article class="card">
+          <div class="eyebrow">Elite</div>
+          <h2>Growth reporting</h2>
+          <p>Canonical id <strong>elite</strong>. Adds the growth report set, deeper analysis, and premium dashboard coverage.</p>
+          <div class="note">Legacy aliases: Evolve, 297</div>
+        </article>
+        <article class="card">
+          <div class="eyebrow">Agent Workflow 24/7</div>
+          <h2>Internal automation</h2>
+          <p>Canonical id <strong>agent_workflow_24_7</strong>. Reserved for operational handoff and internal workflow orchestration.</p>
+          <div class="note">Legacy aliases: Ascend, 397</div>
+        </article>
+      </section>
+
+      <section class="sections">
+        <article class="card">
+          <h3>Routing rules</h3>
+          <ul>
+            <li>Normalize every inbound package value before access checks.</li>
+            <li>Use canonical ids in new writes, but accept legacy values on read.</li>
+            <li>Keep internal workflows behind server-side auth.</li>
+          </ul>
+        </article>
+        <article class="card">
+          <h3>Handoff checklist</h3>
+          <ul>
+            <li>Audit request captured.</li>
+            <li>Package assigned in Supabase.</li>
+            <li>Reports connected to customer records.</li>
+            <li>Call sheet reviewed by operations.</li>
+          </ul>
+        </article>
+      </section>
+
+      <section class="card">
+        <h3>Package matrix</h3>
+        <div class="matrix">
+          <div class="matrix-row">
+            <strong>core</strong>
+            <span>Legacy aliases: Reveal, 197. Comparable to the $197 visibility tier and canonical core access.</span>
+          </div>
+          <div class="matrix-row">
+            <strong>elite</strong>
+            <span>Legacy aliases: Evolve, 297. Comparable to the $297 growth tier and canonical elite access.</span>
+          </div>
+          <div class="matrix-row">
+            <strong>agent_workflow_24_7</strong>
+            <span>Legacy aliases: Ascend, 397. Internal automation and workflow surface.</span>
+          </div>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>

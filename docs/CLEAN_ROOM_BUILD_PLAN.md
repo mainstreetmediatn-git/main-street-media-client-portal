@@ -1,6 +1,12 @@
 # Main Street Growth OS Clean-Room Build Plan
 
+Status: Roadmap
+
 Last reviewed: 2026-07-03
+
+This is future-state roadmap material, not the currently shipped portal architecture.
+
+This plan describes the remaining Phase VI work that sits beyond the current `BusinessSnapshot`-driven portal and orchestrator scaffold. Nothing below should be treated as already shipped.
 
 This plan defines original Main Street Growth OS product behavior. It must not be implemented by copying source code, schemas, UI text, documentation, screenshots, icons, logos, layouts, or branded product concepts from upstream projects.
 
@@ -82,6 +88,30 @@ Required behavior:
 - Require explicit staff approval before sending external messages or changing business records.
 - Log prompts, tool actions, approvals, and generated outputs according to retention policy.
 - Keep system prompts, retrieval rules, tools, and safety checks proprietary.
+
+## Phase VI Boundary
+
+The Phase VI items in this plan remain future work. The repository currently ships the portal surfaces, the canonical `BusinessSnapshot` contract, and the non-executing orchestrator skeleton, but not the live event-driven intelligence runtime, customer-safe agent automation, or the operational modules below.
+
+## Future Architecture
+
+These systems are roadmap-only unless and until they are implemented and validated:
+
+- BusinessSnapshot-driven CRM pipeline
+- AI Growth OS
+- CRM automation
+- Slack integration
+- Google Drive integration
+- Canva integration
+- Learning pipeline
+- Revenue Intelligence
+- Agent Orchestrator
+- reporting dashboard automation
+- audit request form expansion beyond the current V1 portal flow
+
+## Roadmap Notes
+
+The items above are intentionally future architecture. If a feature appears here, it is not a claim that the feature exists in the shipped portal.
 
 ## Reporting Dashboard
 

@@ -2,6 +2,7 @@
 
 import { AuthGuard } from "../../components/AuthGuard";
 import { Shell } from "../../components/Shell";
+import { canonicalPackageIds, packageDefinitions } from "../../lib/portal";
 
 export default function AdminPage() {
   return (
@@ -19,20 +20,37 @@ export default function AdminPage() {
           <section className="grid">
             <div className="card">
               <h2>Assign packages</h2>
-              <p className="muted">Update `profiles.package_type` to `197` or `297`. Customers do not select packages inside the app.</p>
+              <p className="muted">
+                `BusinessSnapshot` canonicalizes package state to {canonicalPackageIds.join(", ")}. Legacy values
+                `Reveal`, `Evolve`, `Ascend`, `197`, `297`, and `397` still normalize correctly for reads only.
+              </p>
             </div>
             <div className="card">
               <h2>Create reports</h2>
-              <p className="muted">Insert report metadata into `reports`, then connect it to a user through `customer_reports`.</p>
+              <p className="muted">
+                Insert report metadata into `reports`, then connect it to a user through `customer_reports`. Report
+                access is derived from the canonical snapshot model.
+              </p>
             </div>
             <div className="card">
               <h2>Review audits</h2>
-              <p className="muted">Audit requests live in `audit_requests` with status tracking for new, pending, in_review, completed, or archived.</p>
+              <p className="muted">
+                Audit requests live in `audit_requests` with status tracking for new, pending, in_review, completed,
+                or archived.
+              </p>
             </div>
+          </section>
+
+          <section className="grid">
+            {canonicalPackageIds.map((id) => (
+              <div className="card" key={id}>
+                <h3>{packageDefinitions[id].label}</h3>
+                <p className="muted">{packageDefinitions[id].description}</p>
+              </div>
+            ))}
           </section>
         </Shell>
       )}
     </AuthGuard>
   );
 }
-

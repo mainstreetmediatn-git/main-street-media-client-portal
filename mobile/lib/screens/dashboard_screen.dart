@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../models/business_snapshot.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -11,41 +12,45 @@ class DashboardScreen extends StatefulWidget {
 }
 
 class _DashboardScreenState extends State<DashboardScreen> {
-  late final Future<_DashboardData> data = loadData();
+  late final Future<BusinessSnapshot?> data = loadData();
 
-  Future<_DashboardData> loadData() async {
+  Future<BusinessSnapshot?> loadData() async {
     final client = Supabase.instance.client;
     final user = client.auth.currentUser;
-    if (user == null) return const _DashboardData();
+    if (user == null) return null;
 
     final results = await Future.wait([
-      client.from('profiles').select().eq('id', user.id).maybeSingle(),
+      client.from('profiles').select('*').eq('id', user.id).maybeSingle(),
       client
           .from('audit_requests')
-          .select()
-          .order('created_at', ascending: false)
-          .limit(1),
+          .select('*')
+          .eq('user_id', user.id)
+          .order('created_at', ascending: false),
       client
           .from('customer_reports')
-          .select('id,reports(*)')
+          .select('id,user_id,report_id,assigned_at,created_at,reports(*)')
+          .eq('user_id', user.id)
           .order('assigned_at', ascending: false),
     ]);
 
-    final profile = (results[0] as Map<String, dynamic>?) ?? {};
+    final profile = results[0] as Map<String, dynamic>?;
     final audits = (results[1] as List).cast<Map<String, dynamic>>();
     final assignedReports = (results[2] as List).cast<Map<String, dynamic>>();
 
-    return _DashboardData(
-      businessName: profile['business_name'] as String?,
-      packageType: profile['package_type'] as String?,
-      latestAuditStatus:
-          audits.isEmpty ? null : audits.first['status'] as String?,
-      reportCount: assignedReports.length,
+    return BusinessSnapshot.fromSupabaseRows(
+      profile: profile,
+      auditRequests: audits,
+      customerReports: assignedReports,
     );
   }
 
-  Future<void> openUrl(String? value) async {
-    if (value == null || value.isEmpty) return;
+  Future<void> openUrl(String? value, String label) async {
+    if (value == null || value.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('$label is not configured.')),
+      );
+      return;
+    }
     await launchUrl(Uri.parse(value), mode: LaunchMode.externalApplication);
   }
 
@@ -53,32 +58,41 @@ class _DashboardScreenState extends State<DashboardScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Dashboard')),
-      body: FutureBuilder<_DashboardData>(
+      body: FutureBuilder<BusinessSnapshot?>(
         future: data,
         builder: (context, snapshot) {
-          final portal = snapshot.data ?? const _DashboardData();
+          final portal = snapshot.data;
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          if (portal == null) {
+            return const Center(
+                child: Text('Sign in to see your business snapshot.'));
+          }
           return ListView(
             padding: const EdgeInsets.all(16),
             children: [
               Card(
                 child: ListTile(
-                  title: Text(portal.businessName ?? 'Business pending'),
-                  subtitle: const Text('Business profile'),
-                  trailing: Text(portal.packageLabel,
+                  title:
+                      Text(portal.profile.businessName ?? 'Business pending'),
+                  subtitle: Text('${portal.summary.packageLabel} package'),
+                  trailing: Text(portal.summary.packagePriceLabel,
                       style: Theme.of(context).textTheme.titleMedium),
                 ),
               ),
               Card(
                 child: ListTile(
                   title: const Text('Audit status'),
-                  subtitle: Text(portal.latestAuditStatusLabel),
+                  subtitle: Text(portal.summary.latestAuditStatusLabel),
                   onTap: () => Navigator.pushNamed(context, '/audit'),
                 ),
               ),
               Card(
                 child: ListTile(
                   title: const Text('Reports'),
-                  subtitle: Text('${portal.reportCount} assigned reports'),
+                  subtitle: Text(
+                      '${portal.summary.assignedReportCount} assigned, ${portal.summary.visibleReportCount} visible'),
                   onTap: () => Navigator.pushNamed(context, '/reports'),
                 ),
               ),
@@ -92,42 +106,18 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   child: ListTile(
                       title: const Text('Book consultation'),
                       subtitle: const Text('Calendly'),
-                      onTap: () => openUrl(dotenv.env['CALENDLY_URL']))),
+                      onTap: () =>
+                          openUrl(dotenv.env['CALENDLY_URL'], 'Calendly'))),
               Card(
                   child: ListTile(
                       title: const Text('Billing'),
                       subtitle: const Text('Stripe customer portal'),
-                      onTap: () => openUrl(dotenv.env['STRIPE_BILLING_URL']))),
+                      onTap: () => openUrl(
+                          dotenv.env['STRIPE_BILLING_URL'], 'Stripe billing'))),
             ],
           );
         },
       ),
     );
-  }
-}
-
-class _DashboardData {
-  const _DashboardData({
-    this.businessName,
-    this.packageType,
-    this.latestAuditStatus,
-    this.reportCount = 0,
-  });
-
-  final String? businessName;
-  final String? packageType;
-  final String? latestAuditStatus;
-  final int reportCount;
-
-  String get packageLabel {
-    if (packageType == '197') return r'$197 Visibility';
-    if (packageType == '297') return r'$297 Growth';
-    return 'Pending';
-  }
-
-  String get latestAuditStatusLabel {
-    final status = latestAuditStatus;
-    if (status == null || status.isEmpty) return 'No request submitted';
-    return status.replaceAll('_', ' ');
   }
 }

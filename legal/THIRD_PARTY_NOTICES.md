@@ -1,5 +1,7 @@
 # Third-Party Notices
 
+Status: Production
+
 Last reviewed: 2026-07-03
 
 This file tracks third-party source code that Main Street Growth OS intentionally copies, modifies, distributes, bundles, or depends on in a way that requires notices. It is not a substitute for package-manager license reports.

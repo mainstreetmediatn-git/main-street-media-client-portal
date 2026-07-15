@@ -1,5 +1,7 @@
 # Commercial Use Checklist
 
+Status: Production
+
 Last reviewed: 2026-07-03
 
 Use this checklist before importing code, copying UI, adding a dependency, embedding a service, or basing a Main Street Growth OS feature on another repository.

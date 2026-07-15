@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import '../models/business_snapshot.dart';
 
 class AuditRequestScreen extends StatefulWidget {
   const AuditRequestScreen({super.key});
@@ -20,6 +21,51 @@ class _AuditRequestScreenState extends State<AuditRequestScreen> {
   final notes = TextEditingController();
   bool submitting = false;
   String? error;
+
+  @override
+  void initState() {
+    super.initState();
+    _prefillBusinessProfile();
+  }
+
+  @override
+  void dispose() {
+    businessName.dispose();
+    website.dispose();
+    phone.dispose();
+    email.dispose();
+    businessCategory.dispose();
+    city.dispose();
+    state.dispose();
+    notes.dispose();
+    super.dispose();
+  }
+
+  Future<void> _prefillBusinessProfile() async {
+    final user = Supabase.instance.client.auth.currentUser;
+    if (user == null) return;
+
+    final profile = await Supabase.instance.client
+        .from('profiles')
+        .select(
+            'id,full_name,email,business_name,phone,package_type,role,created_at,updated_at')
+        .eq('id', user.id)
+        .maybeSingle();
+
+    if (!mounted || profile == null) return;
+
+    final businessSnapshot = BusinessProfile.fromJson(profile);
+
+    if (businessName.text.isEmpty && businessSnapshot.businessName != null) {
+      businessName.text = businessSnapshot.businessName!;
+    }
+    if (phone.text.isEmpty && businessSnapshot.phone != null) {
+      phone.text = businessSnapshot.phone!;
+    }
+    if (email.text.isEmpty && businessSnapshot.email != null) {
+      email.text = businessSnapshot.email!;
+    }
+  }
 
   Future<void> submit() async {
     if (!formKey.currentState!.validate()) return;
