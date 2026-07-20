@@ -1,27 +1,9 @@
 import { redirect } from "next/navigation";
 import { createServerSupabase } from "../../lib/serverSupabase";
 import { createSupabaseAdminClient } from "../../lib/supabaseAdmin";
-import { getStripePublicKey } from "../../lib/stripe";
 import { BillingClient } from "./BillingClient";
 
 export default async function BillingPage() {
-  let stripePublishableKey = "";
-
-  try {
-    stripePublishableKey = getStripePublicKey();
-  } catch (error) {
-    const message = error instanceof Error ? error.message : "Stripe billing is unavailable.";
-    return (
-      <main className="auth-page">
-        <section className="auth-panel">
-          <div className="eyebrow">Billing</div>
-          <h1>Billing setup needed</h1>
-          <p className="muted">{message}</p>
-        </section>
-      </main>
-    );
-  }
-
   const serverSupabase = await createServerSupabase();
 
   if (!serverSupabase) {
@@ -29,7 +11,7 @@ export default async function BillingPage() {
       <main className="auth-page">
         <section className="auth-panel">
           <div className="eyebrow">Billing</div>
-          <h1>Stripe is not configured</h1>
+          <h1>Billing is not configured</h1>
           <p className="muted">
             Set STRIPE_PUBLISHABLE_KEY, STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET, and SUPABASE_SERVICE_ROLE_KEY.
           </p>
@@ -83,7 +65,6 @@ export default async function BillingPage() {
 
   return (
     <BillingClient
-      stripePublishableKey={stripePublishableKey}
       userId={user.id}
       userEmail={(profile?.email || user.email || "").trim()}
       customerName={(profile?.full_name || "").trim()}

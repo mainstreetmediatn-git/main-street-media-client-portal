@@ -6,10 +6,8 @@ import { Shell } from "../../components/Shell";
 import { canonicalPackageIds, packageDefinitions, type CanonicalPackageId } from "../../../shared/packageCatalog";
 import { supabase } from "../../lib/supabase";
 import { loadBusinessSnapshot } from "../../lib/businessSnapshot";
-import { loadStripe } from "@stripe/stripe-js";
 
 type BillingClientProps = {
-  stripePublishableKey: string;
   userId: string;
   userEmail: string;
   customerName: string;
@@ -24,7 +22,6 @@ type BillingClientProps = {
 const packageOrder: CanonicalPackageId[] = [...canonicalPackageIds];
 
 export function BillingClient({
-  stripePublishableKey,
   userId,
   userEmail,
   customerName,
@@ -44,7 +41,7 @@ export function BillingClient({
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
-  const [loadingState, setLoadingState] = useState<string>("Preparing checkout");
+  const [loadingState, setLoadingState] = useState<string>("Preparing secure checkout");
   const [snapshotStatus, setSnapshotStatus] = useState<string | null>(null);
 
   useEffect(() => {
@@ -75,37 +72,30 @@ export function BillingClient({
     setSubmitting(true);
     setError(null);
     setSuccess(null);
-    setLoadingState("Creating secure Stripe checkout");
+    setLoadingState("Creating secure checkout");
 
     try {
-      const response = await fetch("/api/stripe/checkout", {
+      const response = await fetch("/api/billing/checkout", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
           packageId: selectedPackage,
-          customerName: localName,
-          businessName: localBusinessName,
-          leadId: localLeadId
+          purchaseType: "subscription",
+          paymentMethods: ["card", "us_bank_account"]
         })
       });
 
-      const payload = (await response.json().catch(() => null)) as { sessionId?: string; sessionUrl?: string; error?: string } | null;
+      const payload = (await response.json().catch(() => null)) as { checkoutUrl?: string; error?: string } | null;
 
-      if (!response.ok || !payload?.sessionId || !payload.sessionUrl) {
-        setError(payload?.error || "Unable to start Stripe Checkout.");
+      if (!response.ok || !payload?.checkoutUrl) {
+        setError(payload?.error || "Unable to start secure checkout.");
         return;
       }
 
-      const stripe = await loadStripe(stripePublishableKey);
-      if (!stripe) {
-        setError("Stripe.js could not be initialized.");
-        return;
-      }
-
-      window.location.assign(payload.sessionUrl);
-      setSuccess("Redirecting to Stripe Checkout...");
+      window.location.assign(payload.checkoutUrl);
+      setSuccess("Redirecting to secure checkout...");
     } catch (checkoutError) {
       setError(checkoutError instanceof Error ? checkoutError.message : "Unable to start checkout.");
     } finally {
@@ -114,15 +104,32 @@ export function BillingClient({
     }
   }
 
+  async function handleManageBilling() {
+    setSubmitting(true);
+    setError(null);
+    try {
+      const response = await fetch("/api/billing/portal", { method: "POST" });
+      const payload = (await response.json().catch(() => null)) as { portalUrl?: string; error?: string } | null;
+      if (!response.ok || !payload?.portalUrl) {
+        setError(payload?.error || "The billing portal is unavailable.");
+        return;
+      }
+      window.location.assign(payload.portalUrl);
+    } catch {
+      setError("The billing portal is temporarily unavailable.");
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
   return (
       <Shell isAdmin={isAdmin}>
       <div className="header narrow-header">
         <div>
           <div className="eyebrow">Billing</div>
-          <h1>Secure Stripe Checkout</h1>
+          <h1>MAIN STREET MEDIA BILLING ENGINE</h1>
           <p className="muted">
-            Only the publishable key reaches the browser. Payment confirmation, customer updates, and follow-up
-            creation happen after Stripe verifies the webhook.
+            Secure, Main Street Media-branded billing. Card and bank details are entered only in approved hosted payment fields.
           </p>
         </div>
       </div>
@@ -185,12 +192,12 @@ export function BillingClient({
 
           <div className="billing-summary">
             <p>
-              The selected package, customer name, business name, lead ID, Stripe customer ID, Stripe session ID,
-              payment amount, and payment status are all persisted after webhook confirmation.
+              Your service activates only after a signed processor webhook confirms payment. We never receive or store card numbers or security codes.
             </p>
             <button className="button button-large" disabled={submitting} onClick={handleCheckout} type="button">
-              {submitting ? loadingState : "Continue to Stripe Checkout"} <ArrowRight size={18} aria-hidden />
+              {submitting ? loadingState : "Continue to secure checkout"} <ArrowRight size={18} aria-hidden />
             </button>
+            {customerStatus === "Paid" ? <button className="button button-secondary" disabled={submitting} onClick={handleManageBilling} type="button">Manage payment method & invoices</button> : null}
             {error ? (
               <p className="form-error billing-error">
                 <ShieldAlert size={16} aria-hidden />
@@ -212,15 +219,15 @@ export function BillingClient({
           <div className="section-heading premium-heading">
             <div>
               <div className="eyebrow">Security</div>
-              <h2>Server-only Stripe secret handling</h2>
+              <h2>Protected payment handling</h2>
             </div>
             <BadgeDollarSign size={20} aria-hidden />
           </div>
           <ul className="billing-checklist">
-            <li>Checkout Sessions are created on the server.</li>
-            <li>Webhook signatures are verified before CRM updates.</li>
-            <li>Existing Stripe customers are reused instead of duplicated.</li>
-            <li>Failed or expired sessions are recorded without exposing the secret key.</li>
+            <li>Hosted payment collection keeps raw card and bank credentials out of MSM systems.</li>
+            <li>Signed webhooks and idempotency controls confirm payments before CRM activation.</li>
+            <li>Failed payments receive safe customer messages without exposing fraud or processor details.</li>
+            <li>Receipts, refunds, subscriptions, and invoices are tracked in the MSM billing ledger.</li>
           </ul>
         </article>
       </section>

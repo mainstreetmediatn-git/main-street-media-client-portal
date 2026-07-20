@@ -8,9 +8,10 @@
     "start": "next start --hostname 127.0.0.1",
     "lint": "tsc --noEmit -p tsconfig.lint.json",
     "lint:eslint": "eslint . --ext .ts,.tsx",
-    "test": "node --test test/businessSnapshot.contracts.test.cjs"
+    "test": "node --test test/*.test.cjs"
   },
   "dependencies": {
+    "@mendable/firecrawl-js": "^4.30.1",
     "@stripe/stripe-js": "^9.9.0",
     "@supabase/ssr": "^0.6.1",
     "@supabase/supabase-js": "^2.45.4",
@@ -20,7 +21,8 @@
     "next": "^15.0.3",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "stripe": "^22.3.1"
+    "stripe": "^22.3.1",
+    "undici": "^8.7.0"
   },
   "devDependencies": {
     "@types/node": "^22.10.1",

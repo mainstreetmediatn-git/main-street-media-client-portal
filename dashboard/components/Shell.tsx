@@ -23,6 +23,8 @@ import { supabase } from "../lib/supabase";
 
 const primaryNav = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/discover", label: "Discover", icon: Search },
+  { href: "/research", label: "Research", icon: Radar },
   { href: "/request-audit", label: "Request Audit", icon: ClipboardList },
   { href: "/reports", label: "Reports", icon: FileText },
   { href: "/account", label: "Account", icon: Settings }

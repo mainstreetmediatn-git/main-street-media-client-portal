@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.main_street_media_portal"
+    namespace = "com.mainstreetmedia.mainstreetmediaclientportal"
     compileSdk = 36
     ndkVersion = flutter.ndkVersion
 
@@ -15,8 +15,7 @@ android {
     }
 
     defaultConfig {
-        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "com.example.main_street_media_portal"
+        applicationId = "com.mainstreetmedia.mainstreetmediaclientportal"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = 26
@@ -27,9 +26,8 @@ android {
 
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig = signingConfigs.getByName("debug")
+            // Release signing is intentionally not configured here.
+            // Add a real keystore and signingConfig before publishing.
         }
     }
 }

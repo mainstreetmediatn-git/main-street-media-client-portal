@@ -759,6 +759,41 @@ p {
   box-shadow: 0 16px 36px rgba(216, 174, 77, 0.28);
 }
 
+.firecrawl-panel, .firecrawl-form, .firecrawl-results, .research-summary {
+  display: grid;
+  gap: 16px;
+}
+
+.firecrawl-panel { max-width: 920px; padding: 22px; }
+.firecrawl-panel-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; color: var(--gold); }
+.firecrawl-form .button { justify-self: start; }
+.firecrawl-state {
+  display: grid;
+  gap: 4px;
+  max-width: 920px;
+  margin-bottom: 16px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 14px 16px;
+  background: rgba(255, 255, 255, 0.035);
+  color: var(--muted);
+}
+.firecrawl-state strong { color: var(--ink); }
+.firecrawl-state.success { border-color: rgba(129, 217, 167, 0.35); }
+.firecrawl-state.timeout, .firecrawl-state.rate_limit, .firecrawl-state.failure, .firecrawl-state.unavailable { border-color: rgba(255, 141, 126, 0.38); }
+.data-source { color: var(--gold); font-size: 0.72rem; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; }
+.result-card { display: flex; justify-content: space-between; gap: 18px; align-items: flex-start; padding: 18px; }
+.result-card h3 { margin: 7px 0; }
+.result-card p, .research-summary p { margin: 0; white-space: pre-wrap; }
+.research-summary { max-width: 920px; padding: 20px; margin-bottom: 16px; }
+.spin { animation: firecrawl-spin 0.8s linear infinite; }
+@keyframes firecrawl-spin { to { transform: rotate(360deg); } }
+
+@media (max-width: 560px) {
+  .result-card { flex-direction: column; }
+  .firecrawl-form .button { width: 100%; }
+}
+
 .button-secondary {
   background: rgba(255, 255, 255, 0.02);
   color: var(--ink);

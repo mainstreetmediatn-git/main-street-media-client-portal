@@ -3,6 +3,7 @@
 import { AuthGuard } from "../../components/AuthGuard";
 import { Shell } from "../../components/Shell";
 import { canonicalPackageIds, packageDefinitions } from "../../lib/portal";
+import Link from "next/link";
 
 export default function AdminPage() {
   return (
@@ -18,6 +19,11 @@ export default function AdminPage() {
           </div>
 
           <section className="grid">
+            <div className="card">
+              <h2>Billing Engine</h2>
+              <p className="muted">Review protected payment outcomes, receipts, refunds, and recovery work.</p>
+              <Link className="button" href="/admin/billing">Open billing dashboard</Link>
+            </div>
             <div className="card">
               <h2>Assign packages</h2>
               <p className="muted">
